@@ -22,7 +22,7 @@ If you don't have an account yet, you can [create one here](http://app.ubidots.c
 Once you have your API key, you can connect to the API by creating an ApiClient instance. Let's assume your API key is: `"7fj39fk3044045k89fbh34rsd9823jkfs8323"`. Then your code would look like this:
 
 ```javascript
-var api = new Ubidots.ApiClient( '7fj39fk3044045k89fbh34rsd9823jkfs8323' );
+const api = new Ubidots.ApiClient( '7fj39fk3044045k89fbh34rsd9823jkfs8323' );
 ```
 
 Now you have an instance of ApiClient ("api") which can be used to connect to the Ubidots API.
@@ -33,22 +33,22 @@ Saving a New Value to a Variable
 Retrieve the variable you'd like the value to be saved to:
 
 ```javascript
-var myVariable;
-api.getVariable( '56799cf1231b28459f976417', function( variable ) { myVariable = variable; } );
+let myVariable;
+api.getVariable( '56799cf1231b28459f976417', ( variable ) => { myVariable = variable; } );
 ```
 
 Given the instantiated variable, you can save a new value with the following line:
 
 ```javascript
-var newValue;
-myVariable.saveValue( { value : 10 }, function( value ) { newValue = value; } );
+let newValue;
+myVariable.saveValue( { value : 10 }, ( value ) => { newValue = value; } );
 ```
 
 You can also specify a timestamp (optional):
 
 ```javascript
-var newValue;
-myVariable.saveValue( { value : 10, timestamp : 1376061804407 }, function( value ) { newValue = value; } );
+let newValue;
+myVariable.saveValue( { value : 10, timestamp : 1376061804407 }, ( value ) => { newValue = value; } );
 ```
 
 If no timestamp is specified, the API server will assign the current time to it. We think it's always better for you to specify the timestamp so the record reflects the exact time the value was captured, not the time it arrived to our servers.
@@ -61,8 +61,8 @@ As you might know by now, a data source represents a device that's generating ti
 This line creates a new data source:
 
 ```javascript
-var newDatasource;
-api.createDatasource( { name : 'myNewDs', tags : [ 'firstDs', 'new' ], description : 'any des' }, function( datasource ) { newDatasource = datasource; } );
+let newDatasource;
+api.createDatasource( { name : 'myNewDs', tags : [ 'firstDs', 'new' ], description : 'any des' }, ( datasource ) => { newDatasource = datasource; } );
 ```
 
 The `name` key is required, but the `tags` and `description` keys are optional. This new data source can be used to track different variables, so let's create one.
@@ -73,8 +73,8 @@ Creating a Variable
 A variable is a time-series containing different values over time. Let's create one:
 
 ```javascript
-var newVariable;
-newDatasource.createVariable( { name : 'myNewVar', unit : 'Nw' }, function( variable ) { newVariable = variable; } );
+let newVariable;
+newDatasource.createVariable( { name : 'myNewVar', unit : 'Nw' }, ( variable ) => { newVariable = variable; } );
 ```
 
 The `name` and `unit` keys are required.
@@ -87,8 +87,8 @@ To get the values of a variable, use the method `getValues` in an instance of th
 If you only want the last N values call the method with the number of elements you want.
 
 ```javascript
-var allValues;
-myVariable.getValues( function( values ) { allValues = values; } );
+let allValues;
+myVariable.getValues( ( values ) => { allValues = values; } );
 ```
 
 Getting a Group of Data Sources
@@ -97,8 +97,8 @@ Getting a Group of Data Sources
 If you want to get all your data sources you can call the `getDatasources` method on the ApiClient instance directly. This method return a objects Datasource array.
 
 ```javascript
-var allDatasources;
-api.getDatasources( function( datasources ) { allDatasources = datasources; } );
+let allDatasources;
+api.getDatasources( ( datasources ) => { allDatasources = datasources; } );
 ```
 
 Getting a Specific Data source
@@ -109,8 +109,8 @@ Each data source is identified by an ID. A specific data source can be retrieved
 For example, if a data source has the id 51c99cfdf91b28459f976414, it can be retrieved as follows:
 
 ```javascript
-var mySpecificDatasource;
-api.getDatasource( '51c99cfdf91b28459f976414', function( datasource ) { mySpecificDatasource = datasource; } );
+let mySpecificDatasource;
+api.getDatasource( '51c99cfdf91b28459f976414', ( datasource ) => { mySpecificDatasource = datasource; } );
 ```
 
 Getting a Group of Variables From a Data source
@@ -119,8 +119,8 @@ Getting a Group of Variables From a Data source
 You can also retrieve some or all of the variables of a data source:
 
 ```javascript
-var allVariablesOfDatasource;
-myDatasource.getVariables( function( variables ) { allVariablesOfDatasource = variables; } );
+let allVariablesOfDatasource;
+myDatasource.getVariables( ( variables ) => { allVariablesOfDatasource = variables; } );
 ```
 
 Getting a Specific Variable
@@ -129,6 +129,6 @@ Getting a Specific Variable
 As with data sources, you can use your variable's ID to retrieve the details about it:
 
 ```javascript
-var mySpecificVariable;
-api.getVariable( '56799cf1231b28459f976417', function( variable ) { mySpecificVariable = variable; } );
+let mySpecificVariable;
+api.getVariable( '56799cf1231b28459f976417', ( variable ) => { mySpecificVariable = variable; } );
 ```

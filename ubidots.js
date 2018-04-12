@@ -1,10 +1,12 @@
-var Request = {
+'use strict';
+
+const Request = {
   execute : function( settings ) {
     jQuery.ajax( settings );
   }
 };
 
-var RestClient = {
+const RestClient = {
   get : function( url, headers, callback ) {
     Request.execute( {
       url : url,
@@ -32,13 +34,15 @@ var RestClient = {
   }
 };
 
-var Ubidots = {
-  VERSION : '0.0.1',
+const Ubidots = {
+  VERSION : '0.0.2',
   Constants : {
-    API_URL : 'http://things.ubidots.com/api/v1.6/'
+    //API_URL : 'http://things.ubidots.com/api/v1.6/'
+    //API_URL : 'https://things.ubidots.com/api/v1.6/'
+    API_URL : '//things.ubidots.com/api/v1.6/'
   },
   ApiClient : function( apiKey, token, baseUrl, bridgeParam ) {
-    var bridge = bridgeParam;
+    let bridge = bridgeParam;
     
     if ( !( bridge instanceof Ubidots.ServerBridge ) ) {
       bridge = new Ubidots.ServerBridge( apiKey, token, baseUrl );
@@ -46,7 +50,7 @@ var Ubidots = {
     
     this.getDatasources = function( callback ) {
       bridge.get( 'datasources', function( response ) {
-        var rawItems = response[ 'results' ];
+        const rawItems = response[ 'results' ];
         
         callback( bridge.transformToDatasourceObjects( rawItems ) );
       } );
@@ -54,14 +58,14 @@ var Ubidots = {
     
     this.getVariables = function( callback ) {
       bridge.get( 'variables', function( response ) {
-        var rawItems = response[ 'results' ];
+        const rawItems = response[ 'results' ];
         
         callback( bridge.transformToVariableObjects( rawItems ) );
       } );
     };
     
     this.getDatasource = function( id, callback ) {
-      var endpoint = 'datasources/' + id;
+      const endpoint = 'datasources/' + id;
       
       bridge.get( endpoint, function( response ) {
         callback( new Ubidots.Datasource( bridge, response ) );
@@ -69,7 +73,7 @@ var Ubidots = {
     };
     
     this.createDatasource = function( data, callback ) {
-      var endpoint = 'datasources';
+      const endpoint = 'datasources';
       
       bridge.post( endpoint, data, function( response ) {
         callback( new Ubidots.Datasource( bridge, response ) );
@@ -77,7 +81,7 @@ var Ubidots = {
     };
     
     this.getVariable = function( id, callback ) {
-      var endpoint = 'variables/' + id;
+      const endpoint = 'variables/' + id;
       
       bridge.get( endpoint, function( response ) {
         callback( new Ubidots.Variable( bridge, response ) );
@@ -85,8 +89,8 @@ var Ubidots = {
     };
   },
   Datasource : function( bridgeParam, data ) {
-    var self = this;
-    var bridge = bridgeParam;
+    const self = this;
+    const bridge = bridgeParam;
     this.id = data[ 'id' ];
     this.name = data[ 'name' ];
     this.url = data[ 'url' ];
@@ -101,23 +105,23 @@ var Ubidots = {
     this.numberOfVariables = data[ 'number_of_variables' ];
     
     this.getVariables = function( callback ) {
-      var endpoint = 'datasources/' + self.id + '/variables';
+      const endpoint = 'datasources/' + self.id + '/variables';
       
       bridge.get( endpoint, function( response ) {
-        var rawItems = response[ 'results' ];
+        const rawItems = response[ 'results' ];
         
         callback( bridge.transformToVariableObjects( rawItems ) );
       } );
     };
     
     this.removeDatasource = function() {
-      var endpoint = 'datasources/' + self.id;
+      const endpoint = 'datasources/' + self.id;
       
       bridge.delete( endpoint );
     };
     
     this.createVariable = function( data, callback ) {
-      var endpoint = 'datasources/' + self.id + '/variables';
+      const endpoint = 'datasources/' + self.id + '/variables';
       
       bridge.post( endpoint, data, function( response ) {
         callback( new Ubidots.Variable( bridge, response ) );
@@ -125,15 +129,15 @@ var Ubidots = {
     };
   },
   ServerBridge : function( apiKeyParam, tokenParam, baseUrlParam ) {
-    var self = this;
-    var apiKey = undefined;
-    var token = undefined;
-    var baseUrl = ( typeof( baseUrlParam ) === 'string' ) ? baseUrlParam : Ubidots.Constants.API_URL;
-    var apiKeyHeader = {};
-    var tokenHeader = {};
+    const self = this;
+    const baseUrl = ( typeof( baseUrlParam ) === 'string' ) ? baseUrlParam : Ubidots.Constants.API_URL;
+    let apiKey = undefined;
+    let token = undefined;
+    let apiKeyHeader = {};
+    let tokenHeader = {};
     
-    var getToken = function( callback ) {
-      var endpoint = 'auth/token/';
+    const getToken = function( callback ) {
+      const endpoint = 'auth/token/';
       
       self.postWithApiKey( endpoint, function( response ) {
         token = response[ 'token' ];
@@ -141,24 +145,24 @@ var Ubidots = {
       } );
     };
     
-    var setApiKeyHeader = function() {
+    const setApiKeyHeader = function() {
       apiKeyHeader = {
         'X-UBIDOTS-APIKEY' : apiKey
       };
     };
     
-    var setTokenHeader = function() {
+    const setTokenHeader = function() {
       tokenHeader = {
         'X-AUTH-TOKEN' : token
       };
     };
     
-    var prepareData = function( data ) {
+    const prepareData = function( data ) {
       return( data );
     };
     
     this.transformToDatasourceObjects = function( rawItems ) {
-      var datasources = [];
+      let datasources = [];
       
       jQuery.each( rawItems, function( i, rawItem ) {
         datasources[ i ] = new Ubidots.Datasource( self, rawItem );
@@ -168,7 +172,7 @@ var Ubidots = {
     };
     
     this.transformToVariableObjects = function( rawItems ) {
-      var variables = [];
+      let variables = [];
       
       jQuery.each( rawItems, function( i, rawItem ) {
         variables[ i ] = new Ubidots.Variable( self, rawItem );
@@ -178,7 +182,7 @@ var Ubidots = {
     };
     
     this.postWithApiKey = function( endpoint, callback ) {
-      var headers = apiKeyHeader;
+      const headers = apiKeyHeader;
       
       RestClient.post( ( baseUrl + endpoint ), {}, headers, function( jqXHR, textStatus ) {
         if ( textStatus === 'success' ) {
@@ -188,7 +192,7 @@ var Ubidots = {
     };
     
     this.get = function( endpoint, callback ) {
-      var headers = tokenHeader;
+      const headers = tokenHeader;
       
       RestClient.get( ( baseUrl + endpoint ), headers, function( jqXHR, textStatus ) {
         if ( textStatus === 'success' ) {
@@ -198,7 +202,7 @@ var Ubidots = {
     };
     
     this.getWithUrl = function( url, callback ) {
-      var headers = tokenHeader;
+      const headers = tokenHeader;
       
       RestClient.get( url, headers, function( jqXHR, textStatus ) {
         if ( textStatus === 'success' ) {
@@ -208,8 +212,8 @@ var Ubidots = {
     };
     
     this.post = function( endpoint, data, callback ) {
-      var headers = tokenHeader;
-      var data = prepareData( data );
+      const headers = tokenHeader;
+      const data = prepareData( data );
       
       RestClient.post( ( baseUrl + endpoint ), data, headers, function( jqXHR, textStatus ) {
         if ( textStatus === 'success' ) {
@@ -219,7 +223,7 @@ var Ubidots = {
     };
     
     this.delete = function( endpoint ) {
-      var headers = tokenHeader;
+      const headers = tokenHeader;
       
       RestClient.delete( ( baseUrl + endpoint ), headers );
     };
@@ -234,9 +238,9 @@ var Ubidots = {
     }
   },
   Variable : function( bridgeParam, data ) {
-    var self = this;
-    var bridge = bridgeParam;
-    var datasource = undefined;
+    const self = this;
+    const bridge = bridgeParam;
+    const datasource = undefined;
     this.id = data[ 'id' ];
     this.name = data[ 'name' ];
     this.url = data[ 'url' ];
@@ -252,7 +256,7 @@ var Ubidots = {
     this.lastValue = data[ 'last_value' ];
     
     this.getValues = function( callback ) {
-      var endpoint = 'variables/' + self.id + '/values';
+      const endpoint = 'variables/' + self.id + '/values';
       
       bridge.get( endpoint, function( response ) {
         callback( response[ 'results' ] );
@@ -260,13 +264,13 @@ var Ubidots = {
     };
     
     this.saveValue = function( data, callback ) {
-      var endpoint = 'variables/' + self.id + '/values';
+      const endpoint = 'variables/' + self.id + '/values';
       
       bridge.post( endpoint, data, callback );
     };
     
     this.saveValues = function( data, force, callback ) {
-      var endpoint = 'variables/' + self.id + '/values';
+      const endpoint = 'variables/' + self.id + '/values';
       
       if ( force === true ) {
         endpoint = endpoint + '?force=true';
@@ -276,15 +280,15 @@ var Ubidots = {
     };
     
     this.removeVariable = function() {
-      var endpoint = 'variables/' + self.id;
+      const endpoint = 'variables/' + self.id;
       
       bridge.delete( endpoint );
     };
     
     this.getDatasource = function( callback ) {
       if ( typeof( datasource ) === 'undefined' ) {
-        var datasourceId = self.rawDatasource[ 'id' ];
-        var endpoint = 'datasources/' + datasourceId;
+        const datasourceId = self.rawDatasource[ 'id' ];
+        const endpoint = 'datasources/' + datasourceId;
         
         bridge.get( endpoint, function( response ) {
           callback( new Ubidots.Datasource( bridge, response ) );
